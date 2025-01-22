@@ -4,26 +4,34 @@ on:
   push:
     branches:
       - main
-  repository_dispatch:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify your required Node.js version
+
       - name: Install Dependencies
         run: npm install
 
-      - name: Install cheerio
-        run: npm install cheerio
+      - name: Verify Dependencies
+        run: |
+          npm install cheerio
+          npm install crypto-js
 
-      - name: Install crypto-js
-        run: npm install crypto-js
+      - name: Install Wrangler
+        run: npm install -g wrangler@latest
 
       - name: Build & Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
+
